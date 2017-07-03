@@ -36,6 +36,7 @@ const getopt = require('node-getopt').create([
     ['f', 'force', 'override Node.js version check'],
     ['q', 'quiet', 'do not render the game on the console (--ai mode only)'],
     ['h', 'help', 'show this text'],
+    ['w', 'no-workers', 'disable workers (simplifies debugging)']
 ]).bindHelp(`Usage: node jsdash.js [OPTION...]
 
 [[OPTIONS]]
@@ -210,8 +211,13 @@ class Game {
             this.no_color = true;
         if (opt.ai)
         {
-            this.controller = new controller.AI(opt.ai,
-                {unsafe: !!opt.unsafe, interval: this.interval});
+            if (opt['no-workers']) {
+              this.controller = new controller.NoworkersAI(opt.ai);
+            } else {
+              this.controller = new controller.AI(opt.ai,
+                  {unsafe: !!opt.unsafe, interval: this.interval});
+            }
+
             this.log.controller = 'script';
             this.log.script = opt.ai;
         }

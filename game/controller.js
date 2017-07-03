@@ -148,4 +148,25 @@ class Replay extends Controller {
     }
 }
 
-module.exports = {Keyboard, AI, Replay};
+class NoworkersAI extends Controller {
+  constructor(script) {
+    super();
+    this.wrapper = loader.load_unsafe(script);
+  }
+  init() {
+    this.emit('ready');
+  }
+  destroy() {
+    super.destroy();
+  }
+  onupdate(screen) {
+    var res = this.wrapper(screen);
+    if (res.value == 'q') {
+      this.emit('quit');
+    } else {
+      this.emit('control', char2dir(res.value));
+    }
+  }
+}
+
+module.exports = {Keyboard, AI, Replay, NoworkersAI};
